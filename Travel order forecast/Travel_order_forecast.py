@@ -36,17 +36,26 @@ df_order_1['PreDays'] = (df_order_1['Begin_Date'] - df_order_1['Order_Date']).dt
 df_order_1['Begin_Date_Weekday'] = df_order_1['Begin_Date'].dt.dayofweek
 df_order_1['Order_Date_Weekday'] = df_order_1['Order_Date'].dt.dayofweek
 df_order_1['Return_Date_Weekday'] = (df_order_1['Begin_Date'].dt.dayofweek + df_order_1['days']) % 7
-df_order_1['Begin_Date_Month'] = df_order_1['Begin_Date'].dt.month
+df_order_1['Order_Date_Year'] = df_order_1['Order_Date'].dt.year % 100
+df_order_1['Begin_Date_Year'] = df_order_1['Begin_Date'].dt.year % 100
 df_order_1['Order_Date_Month'] = df_order_1['Order_Date'].dt.month
-
+df_order_1['Begin_Date_Month'] = df_order_1['Begin_Date'].dt.month
+df_order_1['Order_Date_Day'] = df_order_1['Order_Date'].dt.day
+df_order_1['Begin_Date_Day'] = df_order_1['Begin_Date'].dt.day
+df_order_1['Order_Date_Week'] = df_order_1['Order_Date'].dt.week
+df_order_1['Begin_Date_Week'] = df_order_1['Begin_Date'].dt.week
+df_order_1['Order_Date_Quarter'] = df_order_1['Order_Date'].dt.quarter
+df_order_1['Begin_Date_Quarter'] = df_order_1['Begin_Date'].dt.quarter
 df_order_2 = df_order_1[
-    ['order_id', 'group_id', 'Order_Date_Month', 'Source_1', 'Source_2', 'Unit', 'people_amount', 'Begin_Date_Month', 'days',
-     'Area', 'SubLine', 'price', 'PreDays', 'Begin_Date_Weekday', 'Order_Date_Weekday', 'Return_Date_Weekday']]
+    ['order_id', 'group_id', 'Source_1', 'Source_2', 'Unit', 'people_amount', 'days', 'Area', 'SubLine', 'price',
+     'PreDays', 'Begin_Date_Weekday', 'Order_Date_Weekday', 'Return_Date_Weekday', 'Order_Date_Year', 'Begin_Date_Year',
+     'Order_Date_Month', 'Begin_Date_Month', 'Order_Date_Day', 'Begin_Date_Day', 'Order_Date_Week', 'Begin_Date_Week',
+     'Order_Date_Quarter', 'Begin_Date_Quarter']]
 print(df_order_2)
 df_train_1 = df_train.merge(df_order_2, on='order_id')
 df_test_1 = df_test.merge(df_order_2, on='order_id')
 
-tf_x = tf.placeholder(tf.float32, [None, 16])
+tf_x = tf.placeholder(tf.float32, [None, 24])
 tf_y = tf.placeholder(tf.float32, [None, 2])
 
 tf_layer1 = tf.layers.dense(tf_x, 80, tf.nn.relu)
@@ -68,7 +77,7 @@ sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 
 batch_size = 100
-for step in range(200):
+for step in range(300):
     print(step)
     df_train_deal = df_train_1[df_train_1['deal_or_not'] == 1]
     df_train_not_deal = df_train_1[df_train_1['deal_or_not'] == 0]
@@ -93,6 +102,8 @@ for step in range(200):
 
     print('train {}'.format(sess.run([tf_accuracy, tf_loss], {tf_x: train_x, tf_y: train_y})))
     print('valid {}'.format(sess.run([tf_accuracy, tf_loss], {tf_x: valid_x, tf_y: valid_y})))
+
+print(sess.run(tf_accuracy, {tf_x: df_train_1.drop(['deal_or_not'], 1), tf_y: np.eye(2)[df_train_1['deal_or_not']]}))
 
 test_deal_or_not = sess.run(tf_deal_or_not, {tf_x: df_test_1.drop(['deal_or_not'], 1)})
 df_test['deal_or_not'] = test_deal_or_not
