@@ -46,15 +46,43 @@ df_order_1['Order_Date_Week'] = df_order_1['Order_Date'].dt.week
 df_order_1['Begin_Date_Week'] = df_order_1['Begin_Date'].dt.week
 df_order_1['Order_Date_Quarter'] = df_order_1['Order_Date'].dt.quarter
 df_order_1['Begin_Date_Quarter'] = df_order_1['Begin_Date'].dt.quarter
-df_order_2 = df_order_1[
-    ['order_id', 'group_id', 'Source_1', 'Source_2', 'Unit', 'people_amount', 'days', 'Area', 'SubLine', 'price',
-     'PreDays', 'Begin_Date_Weekday', 'Order_Date_Weekday', 'Return_Date_Weekday', 'Order_Date_Year', 'Begin_Date_Year',
-     'Order_Date_Month', 'Begin_Date_Month', 'Order_Date_Day', 'Begin_Date_Day', 'Order_Date_Week', 'Begin_Date_Week',
-     'Order_Date_Quarter', 'Begin_Date_Quarter']]
-print(df_order_2)
+
+# df_order_1['order_id135'] = df_order_1['order_id'] // 160000
+# print(df_order_1)
+df_order_2 = df_order_1[['order_id']]
+# df_order_2 = df_order_1[
+#     ['order_id', 'group_id', 'Source_1', 'Source_2', 'Unit', 'people_amount', 'days', 'Area', 'SubLine', 'price',
+#      'PreDays', 'Begin_Date_Weekday', 'Order_Date_Weekday', 'Return_Date_Weekday', 'Order_Date_Year', 'Begin_Date_Year',
+#      'Order_Date_Month', 'Begin_Date_Month', 'Order_Date_Day', 'Begin_Date_Day', 'Order_Date_Week', 'Begin_Date_Week',
+#      'Order_Date_Quarter', 'Begin_Date_Quarter']]
+# print(df_order_2)
+
 df_train_1 = df_train.merge(df_order_2, on='order_id')
 df_test_1 = df_test.merge(df_order_2, on='order_id')
+# df_train_1.to_csv('df_train_1.csv', index=False)
+df_train_deal = df_train_1[df_train_1['deal_or_not'] == 1]
+df_train_not_deal = df_train_1[df_train_1['deal_or_not'] == 0]
+# print(df_train_deal['order_id'].min())
+# print(df_train_deal['order_id'].max())
+# print(df_train_not_deal['order_id'].min())
+# print(df_train_not_deal['order_id'].max())
 
+df_train_1['x'] = 1
+# df_train_1['x'] = np.random.randint(2,size=len(df_train_1))
+df_train_1[df_train_1['order_id'] > df_train_deal['order_id'].max()] = 0
+print(df_train_1)
+df_train_1['acc'] = df_train_1['x'] == df_train_1['deal_or_not']
+print(df_train_1['acc'].mean())
+
+
+
+# df_train_1['x'] = df_train_1['order_id135'] * df_train_1['deal_or_not']
+# x = len(df_train_1[df_train_1['x'] == 0])
+# PreDays = len(df_train_1[df_train_1['order_id135'] == 0])
+# deal_or_not = len(df_train_1[df_train_1['deal_or_not'] == 0])
+# print(2 * x - PreDays - deal_or_not)
+# print((2 * x - PreDays - deal_or_not) / len(df_train_1))
+'''
 tf_x = tf.placeholder(tf.float32, [None, 24])
 tf_y = tf.placeholder(tf.float32, [None, 2])
 
@@ -71,7 +99,7 @@ tf_deal_or_not = tf.argmax(tf_output, 1)
 tf_accuracy = tf.reduce_mean(tf.cast(tf.equal(tf.argmax(tf_output, 1), tf.argmax(tf_y, 1)), 'float'))
 
 tf_loss = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=tf_output, labels=tf_y))
-optimizer = tf.train.AdamOptimizer(0.000005).minimize(tf_loss)
+optimizer = tf.train.AdamOptimizer(0.000001).minimize(tf_loss)
 
 sess = tf.Session()
 sess.run(tf.global_variables_initializer())
@@ -81,6 +109,8 @@ for step in range(300):
     print(step)
     df_train_deal = df_train_1[df_train_1['deal_or_not'] == 1]
     df_train_not_deal = df_train_1[df_train_1['deal_or_not'] == 0]
+    # print(df_train_deal.mean())
+    # print(df_train_not_deal.mean())
     undersampling = df_train_deal.append(df_train_not_deal.sample(len(df_train_deal)))
 
     train_sample = undersampling.sample(frac=0.8)
@@ -111,3 +141,4 @@ df_test['deal_or_not'] = test_deal_or_not
 print(df_test['deal_or_not'].mean())
 
 df_test.to_csv('submission.csv', index=False)
+'''
