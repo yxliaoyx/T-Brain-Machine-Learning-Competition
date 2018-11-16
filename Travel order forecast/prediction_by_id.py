@@ -19,3 +19,17 @@ df_test['deal_or_not'] = df_test_copy['deal_or_not']
 df_test.to_csv('submission_prediction_by_id.csv', index=False)
 print(df_test)
 print(df_test['deal_or_not'].mean())
+
+
+
+
+df_submission = pd.read_csv('submission.csv')
+
+df_submission_copy = df_submission.copy()
+print(df_submission_copy[not_deal])
+df_submission_copy[not_deal] = 0
+df_submission['deal_or_not'] = df_submission_copy['deal_or_not']
+
+df_submission.to_csv('submission_prediction_by_id.csv', index=False)
+print(df_submission)
+print(df_submission['deal_or_not'].mean())
