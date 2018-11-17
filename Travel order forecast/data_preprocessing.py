@@ -9,10 +9,10 @@ df_day_schedule = pd.read_csv('dataset/day_schedule.csv')
 
 df_airline = df_airline[(df_airline['group_id'] != 1303) & (df_airline['group_id'] != 47252)]
 
-df_airline_size = df_airline.groupby('group_id').size().reset_index().rename(columns={0: 'size'})
-df_group_airline_size = pd.merge(df_group, df_airline_size, 'left').fillna(2)
+df_airline_transfer = df_airline.groupby('group_id').size().reset_index().rename(columns={0: 'transfer'})
+df_group_airline_transfer  = pd.merge(df_group, df_airline_transfer , 'left').fillna(2)
 # df_group_airline_size = pd.merge(df_group, df_airline_groupby[['group_id', 'size']], 'left').fillna(2)
-print(df_group_airline_size['size'].max())
+print(df_group_airline_transfer ['transfer'].max())
 # print(df_order.merge(df_airline_transfer, on='group_id'))
 
 
