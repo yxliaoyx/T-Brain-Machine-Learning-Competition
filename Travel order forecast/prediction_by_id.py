@@ -18,7 +18,7 @@ df_test['deal_or_not'] = df_test_copy['deal_or_not']
 
 df_test.to_csv('submission_prediction_by_id.csv', index=False)
 # print(df_test)
-# print(df_test['deal_or_not'].mean())
+print(df_test['deal_or_not'].mean())
 
 
 train_prediction = pd.read_csv('train_prediction.csv')

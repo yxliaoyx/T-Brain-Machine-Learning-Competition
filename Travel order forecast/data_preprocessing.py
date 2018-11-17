@@ -11,10 +11,7 @@ df_airline = df_airline[(df_airline['group_id'] != 1303) & (df_airline['group_id
 
 df_airline_transfer = df_airline.groupby('group_id').size().reset_index().rename(columns={0: 'transfer'})
 df_group_airline_transfer  = pd.merge(df_group, df_airline_transfer , 'left').fillna(2)
-# df_group_airline_size = pd.merge(df_group, df_airline_groupby[['group_id', 'size']], 'left').fillna(2)
-print(df_group_airline_transfer ['transfer'].max())
-# print(df_order.merge(df_airline_transfer, on='group_id'))
 
-
-# print(df_airline_transfer[df_airline_transfer == 7])
-# print(df_airline_transfer.max())
+df_day_schedule['title_len'] = df_day_schedule['title'].apply(lambda x: len(x))
+df_day_schedule_sum = df_day_schedule.groupby('group_id').sum().reset_index()
+print(df_day_schedule_sum['title_len'].max())
