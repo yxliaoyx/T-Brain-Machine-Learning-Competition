@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import lightgbm as lgb
 
 df_test = pd.read_csv('testing-set.csv')
 df_train = pd.read_csv('training-set.csv')
@@ -16,7 +17,7 @@ df_test_copy['deal_or_not'] = (df_test_copy['deal_or_not'] < (0.5 / (1 - len(df_
 df_test_copy[not_deal] = 0
 df_test['deal_or_not'] = df_test_copy['deal_or_not']
 
-df_test.to_csv('submission_prediction_by_id.csv', index=False)
+df_test.to_csv('prediction_by_id.csv', index=False)
 # print(df_test)
 print(df_test['deal_or_not'].mean())
 
