@@ -18,39 +18,48 @@ def Convert_Date(x):
     return pd.to_datetime(Year + '-' + Month + '-' + Day)
 
 
-df_group['Begin_Date'] = df_group['begin_date'].apply(lambda x: Convert_Date(x))
-df_group['SubLine'] = df_group['sub_line'].apply(lambda x: int(x[14:]))
-df_group['Area'] = df_group['area'].apply(lambda x: int(x[11:]))
+df_group['begin_date'] = df_group['begin_date'].apply(lambda x: Convert_Date(x))
+df_group['sub_line'] = df_group['sub_line'].apply(lambda x: int(x[14:]))
+df_group['area'] = df_group['area'].apply(lambda x: int(x[11:]))
+df_group['product_name_len'] = df_group['product_name'].apply(lambda x: len(str(x)))
+df_group['promotion_prog_len'] = df_group['promotion_prog'].apply(lambda x: len(str(x)))
+
+df_day_schedule['title_len'] = df_day_schedule['title'].apply(lambda x: len(x))
+df_day_schedule_sum = df_day_schedule.groupby('group_id').sum().reset_index().rename(columns={'day': 'day_sum'})
+df_group = pd.merge(df_group, df_day_schedule_sum, 'left')
 
 df_airport_go = df_airline[['group_id', 'src_airport', 'dst_airport']][df_airline['go_back'] == '去程']
 df_airport_go = df_airport_go.groupby('group_id').sum().reset_index()
 df_airport_back = df_airline[['group_id', 'src_airport', 'dst_airport']][df_airline['go_back'] == '回程']
 df_airport_back = df_airport_back.groupby('group_id').sum().reset_index()
 
-df_order = pd.merge(df_order, df_airport_go, 'left')
-df_order = df_order.rename(columns={'src_airport': 'src_airport_go', 'dst_airport': 'dst_airport_go'})
-df_order = pd.merge(df_order, df_airport_back, 'left')
-df_order = df_order.rename(columns={'src_airport': 'src_airport_back', 'dst_airport': 'dst_airport_back'})
+df_group = pd.merge(df_group, df_airport_go, 'left')
+df_group = df_group.rename(columns={'src_airport': 'src_airport_go', 'dst_airport': 'dst_airport_go'})
+df_group = pd.merge(df_group, df_airport_back, 'left')
+df_group = df_group.rename(columns={'src_airport': 'src_airport_back', 'dst_airport': 'dst_airport_back'})
 
-df_order = pd.merge(df_order, df_group[['group_id', 'Begin_Date', 'days', 'Area', 'SubLine', 'price']], 'left')
+df_airline_transfer = df_airline.groupby('group_id').size().reset_index().rename(columns={0: 'transfer'}).fillna(2)
+df_group = pd.merge(df_group, df_airline_transfer, 'left')
 
-df_order['Order_Date'] = df_order['order_date'].apply(lambda x: Convert_Date(x))
-df_order['Source_1'] = df_order['source_1'].apply(lambda x: int(x[11:]))
-df_order['Source_2'] = df_order['source_2'].apply(lambda x: int(x[11:]))
-df_order['Unit'] = df_order['unit'].apply(lambda x: int(x[11:]))
-df_order['PreDays'] = (df_order['Begin_Date'] - df_order['Order_Date']).dt.days
-df_order['Begin_Date_Weekday'] = df_order['Begin_Date'].dt.dayofweek
-df_order['Order_Date_Weekday'] = df_order['Order_Date'].dt.dayofweek
-df_order['Return_Date_Weekday'] = (df_order['Begin_Date'].dt.dayofweek + df_order['days']) % 7
-df_order['Order_Date_Year'] = df_order['Order_Date'].dt.year
-df_order['Begin_Date_Year'] = df_order['Begin_Date'].dt.year
-df_order['Order_Date_Month'] = df_order['Order_Date'].dt.month
-df_order['Begin_Date_Month'] = df_order['Begin_Date'].dt.month
-df_order['Order_Date_Day'] = df_order['Order_Date'].dt.day
-df_order['Begin_Date_Day'] = df_order['Begin_Date'].dt.day
-df_order['Order_Date_Week'] = df_order['Order_Date'].dt.week
-df_order['Begin_Date_Week'] = df_order['Begin_Date'].dt.week
-df_order['Order_Date_Quarter'] = df_order['Order_Date'].dt.quarter
-df_order['Begin_Date_Quarter'] = df_order['Begin_Date'].dt.quarter
+df_order = pd.merge(df_order, df_group, 'left')
+
+df_order['order_date'] = df_order['order_date'].apply(lambda x: Convert_Date(x))
+df_order['source_1'] = df_order['source_1'].apply(lambda x: int(x[11:]))
+df_order['source_2'] = df_order['source_2'].apply(lambda x: int(x[11:]))
+df_order['unit'] = df_order['unit'].apply(lambda x: int(x[11:]))
+df_order['predays'] = (df_order['begin_date'] - df_order['order_date']).dt.days
+df_order['begin_date_weekday'] = df_order['begin_date'].dt.dayofweek
+df_order['order_date_weekday'] = df_order['order_date'].dt.dayofweek
+df_order['return_date_weekday'] = (df_order['begin_date'].dt.dayofweek + df_order['days']) % 7
+df_order['order_date_year'] = df_order['order_date'].dt.year
+df_order['begin_date_year'] = df_order['begin_date'].dt.year
+df_order['order_date_month'] = df_order['order_date'].dt.month
+df_order['begin_date_month'] = df_order['begin_date'].dt.month
+df_order['order_date_day'] = df_order['order_date'].dt.day
+df_order['begin_date_day'] = df_order['begin_date'].dt.day
+df_order['order_date_week'] = df_order['order_date'].dt.week
+df_order['begin_date_week'] = df_order['begin_date'].dt.week
+df_order['order_date_quarter'] = df_order['order_date'].dt.quarter
+df_order['begin_date_quarter'] = df_order['begin_date'].dt.quarter
 
 df_order.to_csv('df_order.csv', index=False)

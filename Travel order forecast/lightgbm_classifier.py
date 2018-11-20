@@ -16,15 +16,12 @@ for feature in ['src_airport_go', 'dst_airport_go', 'src_airport_back', 'dst_air
     le.fit(df_order[feature].astype(str))
     df_order[feature] = le.transform(df_order[feature].astype(str))
 
-# features = ['Source_1', 'Source_2', 'Unit', 'people_amount', 'days', 'Area', 'SubLine', 'price', 'PreDays', 'Begin_Date_Weekday',
-#             'Order_Date_Weekday', 'Return_Date_Weekday', 'Order_Date_Year', 'Begin_Date_Year', 'Order_Date_Month',
-#             'Begin_Date_Month', 'Order_Date_Day', 'Begin_Date_Day', 'Order_Date_Week', 'Begin_Date_Week',
-#             'Order_Date_Quarter', 'Begin_Date_Quarter']
-features = ['Source_1', 'Source_2', 'Unit', 'people_amount', 'src_airport_go', 'dst_airport_go', 'src_airport_back',
-            'dst_airport_back', 'days', 'Area', 'SubLine', 'price', 'PreDays', 'Begin_Date_Weekday',
-            'Order_Date_Weekday', 'Return_Date_Weekday', 'Order_Date_Year', 'Begin_Date_Year', 'Order_Date_Month',
-            'Begin_Date_Month', 'Order_Date_Day', 'Begin_Date_Day', 'Order_Date_Week', 'Begin_Date_Week',
-            'Order_Date_Quarter', 'Begin_Date_Quarter']
+features = ['source_1', 'source_2', 'unit', 'people_amount', 'sub_line', 'area', 'days', 'price', 'product_name_len',
+            'promotion_prog_len', 'day_sum', 'title_len', 'src_airport_go', 'dst_airport_go', 'src_airport_back',
+            'dst_airport_back', 'transfer', 'predays', 'begin_date_weekday', 'order_date_weekday',
+            'return_date_weekday', 'order_date_year', 'begin_date_year', 'order_date_month', 'begin_date_month',
+            'order_date_day', 'begin_date_day', 'order_date_week', 'begin_date_week', 'order_date_quarter',
+            'begin_date_quarter']
 
 df_test = pd.merge(df_test, df_order, 'left')
 test_x = df_test[features]
@@ -41,7 +38,7 @@ X_train, X_valid, Y_train, Y_valid = train_test_split(
     train_y,
     test_size=0.2,
     random_state=1,
-    stratify=train_y  # 这里保证分割后y的比例分布与原数据一致
+    stratify=train_y
 )
 
 # create dataset for lightgbm
@@ -53,16 +50,16 @@ params = {
     'boosting_type': 'gbdt',
     'objective': 'binary',
     'metric': {'binary_logloss', 'auc'},
-    'num_leaves': 5,
-    'max_depth': 6,
+    'num_leaves': 50,
+    'max_depth': 10,
     'min_data_in_leaf': 450,
-    'learning_rate': 0.1,
-    'feature_fraction': 0.9,
-    'bagging_fraction': 0.95,
+    'learning_rate': 0.01,
+    'feature_fraction': 0.5,
+    'bagging_fraction': 0.9,
     'bagging_freq': 5,
-    'lambda_l1': 1,
-    'lambda_l2': 0.001,
-    'min_gain_to_split': 0.2,
+    # 'lambda_l1': 1,
+    # 'lambda_l2': 0.001,
+    'min_gain_to_split': 0.5,
     'verbose': 5,
     'is_unbalance': True
 }
