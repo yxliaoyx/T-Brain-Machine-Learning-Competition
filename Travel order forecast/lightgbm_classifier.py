@@ -17,11 +17,11 @@ for feature in ['src_airport_go', 'dst_airport_go', 'src_airport_back', 'dst_air
     df_order[feature] = le.transform(df_order[feature].astype(str))
 
 features = ['source_1', 'source_2', 'unit', 'people_amount', 'sub_line', 'area', 'days', 'price', 'product_name_len',
-            'promotion_prog_len', 'day_sum', 'title_len', 'src_airport_go', 'dst_airport_go', 'src_airport_back',
-            'dst_airport_back', 'transfer', 'predays', 'begin_date_weekday', 'order_date_weekday',
-            'return_date_weekday', 'order_date_year', 'begin_date_year', 'order_date_month', 'begin_date_month',
-            'order_date_day', 'begin_date_day', 'order_date_week', 'begin_date_week', 'order_date_quarter',
-            'begin_date_quarter']
+            'promotion_prog_len', 'random_day', 'random_title_len', 'day_sum', 'title_len_sum', 'src_airport_go',
+            'dst_airport_go', 'src_airport_back', 'dst_airport_back', 'transfer', 'predays', 'begin_date_weekday',
+            'order_date_weekday', 'return_date_weekday', 'order_date_year', 'begin_date_year', 'order_date_month',
+            'begin_date_month', 'order_date_day', 'begin_date_day', 'order_date_week', 'begin_date_week',
+            'order_date_quarter', 'begin_date_quarter']
 
 df_test = pd.merge(df_test, df_order, 'left')
 test_x = df_test[features]
@@ -50,14 +50,14 @@ params = {
     'boosting_type': 'gbdt',
     'objective': 'binary',
     'metric': {'binary_logloss', 'auc'},
-    'num_leaves': 50,
-    'max_depth': 10,
+    'num_leaves': 100,
+    'max_depth': 20,
     'min_data_in_leaf': 450,
-    'learning_rate': 0.01,
+    'learning_rate': 0.002,
     'feature_fraction': 0.5,
     'bagging_fraction': 0.9,
     'bagging_freq': 5,
-    # 'lambda_l1': 1,
+    'lambda_l1': 0.001,
     # 'lambda_l2': 0.001,
     'min_gain_to_split': 0.5,
     'verbose': 5,
@@ -70,7 +70,7 @@ gbm = lgb.train(params,
                 lgb_train,
                 num_boost_round=10000,
                 valid_sets=lgb_eval,
-                early_stopping_rounds=500)
+                early_stopping_rounds=1000)
 
 print('Start predicting...')
 preds = gbm.predict(test_x, num_iteration=gbm.best_iteration)  # 输出的是概率结果
