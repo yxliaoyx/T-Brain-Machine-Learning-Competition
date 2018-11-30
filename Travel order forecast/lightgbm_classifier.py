@@ -41,11 +41,11 @@ X_train, X_valid, Y_train, Y_valid = train_test_split(
     stratify=train_y
 )
 
-# create dataset for lightgbm
+
 lgb_train = lgb.Dataset(X_train, Y_train)
 lgb_eval = lgb.Dataset(X_valid, Y_valid, reference=lgb_train)
 
-# specify your configurations as a dict
+
 params = {
     'boosting_type': 'gbdt',
     'objective': 'binary',
@@ -57,14 +57,14 @@ params = {
     'feature_fraction': 0.5,
     'bagging_fraction': 0.9,
     'bagging_freq': 5,
-    'lambda_l1': 0.001,
+    # 'lambda_l1': 0.001,
     # 'lambda_l2': 0.001,
     'min_gain_to_split': 0.5,
     'verbose': 5,
     'is_unbalance': True
 }
 
-# train
+
 print('Start training...')
 gbm = lgb.train(params,
                 lgb_train,
@@ -78,12 +78,12 @@ df_test['deal_or_not'] = preds
 print(df_test['deal_or_not'].mean())
 df_test.to_csv('submission.csv', columns=['order_id', 'deal_or_not'], index=False)
 
-# 导出结果
+
 threshold = 0.5
 for pred in preds:
     result = 1 if pred > threshold else 0
 
-# 导出特征重要性
+
 importance = gbm.feature_importance()
 names = gbm.feature_name()
 with open('./feature_importance.txt', 'w+') as file:

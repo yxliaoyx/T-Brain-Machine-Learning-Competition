@@ -1,10 +1,10 @@
 import pandas as pd
 import numpy as np
 
-df_order = pd.read_csv('dataset/order.csv')
-df_group = pd.read_csv('dataset/group.csv')
-df_airline = pd.read_csv('dataset/airline.csv')
-df_day_schedule = pd.read_csv('dataset/day_schedule.csv')
+df_order = pd.read_csv('dataset/order.csv', dtype={'order_id': str, 'group_id': str})
+df_group = pd.read_csv('dataset/group.csv', dtype={'group_id': str})
+df_airline = pd.read_csv('dataset/airline.csv', dtype={'group_id': str})
+df_day_schedule = pd.read_csv('dataset/day_schedule.csv', dtype={'group_id': str})
 
 df_airline = df_airline[(df_airline['group_id'] != 1303) & (df_airline['group_id'] != 47252)]
 
@@ -25,7 +25,7 @@ df_group['area'] = df_group['area'].apply(lambda x: int(x[11:]))
 df_group['product_name_len'] = df_group['product_name'].apply(lambda x: len(str(x)))
 df_group['promotion_prog_len'] = df_group['promotion_prog'].apply(lambda x: len(str(x)))
 
-df_day_schedule['title_len'] = df_day_schedule['title'].apply(lambda x: len(x))
+df_day_schedule['title_len'] = df_day_schedule['title'].apply(lambda x: len(str(x)))
 
 df_day_schedule_random = df_day_schedule.groupby('group_id').agg(np.random.choice).reset_index()
 df_day_schedule_random = df_day_schedule_random.rename(columns={'day': 'random_day', 'title_len': 'random_title_len'})
