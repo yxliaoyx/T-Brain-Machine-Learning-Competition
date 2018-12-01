@@ -7,9 +7,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 
 print("Loading Data ... ")
-df_order = pd.read_csv('df_order.csv')
-df_test = pd.read_csv('testing-set.csv')
-df_train = pd.read_csv('training-set.csv')
+df_order = pd.read_csv('df_order.csv', dtype={'order_id': str, 'group_id': str})
+df_test = pd.read_csv('testing-set.csv', dtype={'order_id': str})
+df_train = pd.read_csv('training-set.csv', dtype={'order_id': str})
 
 for feature in ['src_airport_go', 'dst_airport_go', 'src_airport_back', 'dst_airport_back']:
     le = LabelEncoder()
@@ -29,9 +29,12 @@ test_x = df_test[features]
 df_train = pd.merge(df_train, df_order, 'left')
 df_train_deal = df_train[df_train['deal_or_not'] == 1]
 df_train_not_deal = df_train[df_train['deal_or_not'] == 0]
+
 undersampling = df_train_deal.append(df_train_not_deal.sample(len(df_train_deal)))
-train_x = undersampling[features]
-train_y = undersampling['deal_or_not']
+# train_x = undersampling[features]
+# train_y = undersampling['deal_or_not']
+train_x = df_train[features]
+train_y = df_train['deal_or_not']
 
 X_train, X_valid, Y_train, Y_valid = train_test_split(
     train_x,
