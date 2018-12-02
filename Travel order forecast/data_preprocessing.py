@@ -25,20 +25,26 @@ df_group['area'] = df_group['area'].apply(lambda x: int(x[11:]))
 df_group['product_name_len'] = df_group['product_name'].apply(lambda x: len(str(x)))
 df_group['promotion_prog_len'] = df_group['promotion_prog'].apply(lambda x: len(str(x)))
 
-df_day_schedule['title_len'] = df_day_schedule['title'].apply(lambda x: len(str(x)))
+df_day_schedule['schedule_title_len'] = df_day_schedule['title'].apply(lambda x: len(str(x)))
 
 df_day_schedule_random = df_day_schedule.groupby('group_id').agg(np.random.choice).reset_index()
-df_day_schedule_random = df_day_schedule_random.rename(columns={'day': 'random_day', 'title_len': 'random_title_len'})
-df_group = pd.merge(df_group, df_day_schedule_random[['group_id', 'random_day', 'random_title_len']], 'left')
+df_day_schedule_random['schedule_title_len'] = df_day_schedule_random['title'].apply(lambda x: len(str(x)))
+df_day_schedule_random['schedule_city'] = df_day_schedule_random['title'].apply(lambda x: str(x)[:2])
+df_day_schedule_random = df_day_schedule_random.rename(
+    columns={'day': 'schedule_random_day', 'schedule_title_len': 'schedule_random_title_len',
+             'schedule_city': 'schedule_random_city'})
+df_group = pd.merge(df_group, df_day_schedule_random[
+    ['group_id', 'schedule_random_day', 'schedule_random_title_len', 'schedule_random_city']], 'left')
 
 df_day_schedule_sum = df_day_schedule.groupby('group_id').sum().reset_index()
-df_day_schedule_sum = df_day_schedule_sum.rename(columns={'day': 'day_sum', 'title_len': 'title_len_sum'})
-df_group = pd.merge(df_group, df_day_schedule_sum[['group_id', 'day_sum', 'title_len_sum']], 'left')
+df_day_schedule_sum = df_day_schedule_sum.rename(
+    columns={'day': 'schedule_day_sum', 'schedule_title_len': 'schedule_title_len_sum'})
+df_group = pd.merge(df_group, df_day_schedule_sum[['group_id', 'schedule_day_sum', 'schedule_title_len_sum']], 'left')
 
 df_airport_go = df_airline[['group_id', 'src_airport', 'dst_airport']][df_airline['go_back'] == '去程']
-df_airport_go = df_airport_go.groupby('group_id').sum().reset_index()
+df_airport_go = df_airport_go.groupby('group_id').agg(np.random.choice).reset_index()
 df_airport_back = df_airline[['group_id', 'src_airport', 'dst_airport']][df_airline['go_back'] == '回程']
-df_airport_back = df_airport_back.groupby('group_id').sum().reset_index()
+df_airport_back = df_airport_back.groupby('group_id').agg(np.random.choice).reset_index()
 
 df_group = pd.merge(df_group, df_airport_go, 'left')
 df_group = df_group.rename(columns={'src_airport': 'src_airport_go', 'dst_airport': 'dst_airport_go'})
