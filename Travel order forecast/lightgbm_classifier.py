@@ -49,36 +49,40 @@ X_train, X_valid, Y_train, Y_valid = train_test_split(
 lgb_train = lgb.Dataset(X_train, Y_train)
 lgb_eval = lgb.Dataset(X_valid, Y_valid, reference=lgb_train)
 
+# params = {
+#     'boosting_type': 'gbdt',
+#     'objective': 'binary',
+#     'metric': {'binary_logloss', 'auc'},
+#     'num_leaves': 100,
+#     'max_depth': 20,
+#     'min_data_in_leaf': 450,
+#     'learning_rate': 0.002,
+#     'feature_fraction': 0.8,
+#     'bagging_fraction': 0.9,
+#     'bagging_freq': 5,
+#     # 'lambda_l1': 0.001,
+#     # 'lambda_l2': 0.001,
+#     'min_gain_to_split': 0.5,
+#     'verbose': 5,
+#     'is_unbalance': True
+# }
 params = {
     'boosting_type': 'gbdt',
-    'objective': 'binary',
-    'metric': {'binary_logloss', 'auc'},
-    'num_leaves': 100,
-    'max_depth': 20,
-    'min_data_in_leaf': 450,
-    'learning_rate': 0.002,
-    'feature_fraction': 0.5,
-    'bagging_fraction': 0.9,
-    'bagging_freq': 5,
-    # 'lambda_l1': 0.001,
-    # 'lambda_l2': 0.001,
-    'min_gain_to_split': 0.5,
-    'verbose': 5,
-    'is_unbalance': True
+    'objective': 'binary'
 }
 
 print('Start training...')
 gbm = lgb.train(params,
-                lgb_train,
-                num_boost_round=10000,
-                valid_sets=lgb_eval,
-                early_stopping_rounds=1000)
+                lgb_train)
+# num_boost_round=10000,
+# valid_sets=lgb_eval,
+# early_stopping_rounds=1000)
 
 print('Start predicting...')
 preds = gbm.predict(test_x, num_iteration=gbm.best_iteration)
 df_test['deal_or_not'] = preds
-print(df_test['deal_or_not'].mean())
-df_test.to_csv('submission.csv', columns=['order_id', 'deal_or_not'], index=False)
+print(df_test['deal_or_not'].describe())
+df_test.to_csv('submission_default.csv', columns=['order_id', 'deal_or_not'], index=False)
 
 threshold = 0.5
 for pred in preds:
