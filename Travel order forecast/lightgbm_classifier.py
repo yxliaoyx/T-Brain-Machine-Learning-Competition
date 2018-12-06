@@ -68,21 +68,27 @@ lgb_eval = lgb.Dataset(X_valid, Y_valid, reference=lgb_train)
 # }
 params = {
     'boosting_type': 'gbdt',
-    'objective': 'binary'
+    'objective': 'binary',
+    'metric': {'binary_logloss', 'auc'},
+    'learning_rate': 0.1,
+    'max_depth': 10,
+    'num_leaves': 1000,
+    'bagging_fraction': 0.8,
+    'feature_fraction': 0.5
 }
 
 print('Start training...')
 gbm = lgb.train(params,
-                lgb_train)
-# num_boost_round=10000,
-# valid_sets=lgb_eval,
-# early_stopping_rounds=1000)
+                lgb_train,
+                valid_sets=lgb_eval,
+                num_boost_round=10000,
+                early_stopping_rounds=100)
 
 print('Start predicting...')
 preds = gbm.predict(test_x, num_iteration=gbm.best_iteration)
 df_test['deal_or_not'] = preds
 print(df_test['deal_or_not'].describe())
-df_test.to_csv('submission_default.csv', columns=['order_id', 'deal_or_not'], index=False)
+df_test.to_csv('submission.csv', columns=['order_id', 'deal_or_not'], index=False)
 
 threshold = 0.5
 for pred in preds:
