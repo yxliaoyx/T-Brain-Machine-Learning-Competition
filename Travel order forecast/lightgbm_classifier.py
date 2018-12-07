@@ -70,18 +70,22 @@ params = {
     'boosting_type': 'gbdt',
     'objective': 'binary',
     'metric': {'binary_logloss', 'auc'},
-    'learning_rate': 0.1,
+    'learning_rate': 0.01,
     'max_depth': 10,
-    'num_leaves': 1000,
+    # 'num_leaves': 1000,
+    # 'min_sum_hessian_in_leaf': 0.01,
+    'min_data_in_leaf': 100,
     'bagging_fraction': 0.8,
-    'feature_fraction': 0.5
+    'feature_fraction': 0.5,
+    # 'lambda_l1': 0.001
+    # 'lambda_l2': 0.001
 }
 
 print('Start training...')
 gbm = lgb.train(params,
                 lgb_train,
                 valid_sets=lgb_eval,
-                num_boost_round=10000,
+                num_boost_round=5000,
                 early_stopping_rounds=100)
 
 print('Start predicting...')
@@ -102,4 +106,5 @@ with open('./feature_importance.txt', 'w+') as file:
         file.write(string)
 
 lgb.plot_importance(gbm)
+plt.savefig('feature_importance.png')
 plt.show()
