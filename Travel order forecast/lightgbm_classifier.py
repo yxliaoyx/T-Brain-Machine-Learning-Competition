@@ -72,13 +72,16 @@ params = {
     'metric': {'binary_logloss', 'auc'},
     'learning_rate': 0.01,
     'max_depth': 10,
-    # 'num_leaves': 1000,
+    'num_leaves': 1000,
     # 'min_sum_hessian_in_leaf': 0.01,
     'min_data_in_leaf': 100,
     'bagging_fraction': 0.8,
     'feature_fraction': 0.5,
     # 'lambda_l1': 0.001
     # 'lambda_l2': 0.001
+    # 'min_gain_to_split': 0.2
+    'verbose': 2,
+    # 'is_unbalance': True
 }
 
 print('Start training...')
