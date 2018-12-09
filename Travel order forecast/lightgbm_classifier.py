@@ -7,20 +7,20 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 import matplotlib.pylab as plt
 
-print("Loading Data ... ")
 df_order = pd.read_csv('df_order.csv', dtype={'order_id': str, 'group_id': str})
 df_test = pd.read_csv('testing-set.csv', dtype={'order_id': str})
 df_train = pd.read_csv('training-set.csv', dtype={'order_id': str})
 
-for feature in ['schedule_random_city', 'src_airport_go', 'dst_airport_go', 'src_airport_back', 'dst_airport_back']:
+for feature in ['product_name_start', 'schedule_random_city', 'src_airport_go', 'dst_airport_go', 'src_airport_back',
+                'dst_airport_back']:
     le = LabelEncoder()
     le.fit(df_order[feature].astype(str))
     df_order[feature] = le.transform(df_order[feature].astype(str))
 
-features = ['source_1', 'source_2', 'unit', 'people_amount', 'sub_line', 'area', 'days', 'price', 'product_name_len',
-            'promotion_prog_len', 'schedule_random_day', 'schedule_random_title_len', 'schedule_random_city',
-            'schedule_day_sum', 'schedule_title_len_sum', 'src_airport_go', 'dst_airport_go', 'src_airport_back',
-            'dst_airport_back', 'transfer', 'predays', 'begin_date_weekday', 'order_date_weekday',
+features = ['source_1', 'source_2', 'unit', 'people_amount', 'sub_line', 'area', 'days', 'price', 'product_name_start',
+            'product_name_len', 'promotion_prog_len', 'schedule_random_day', 'schedule_random_title_len',
+            'schedule_random_city', 'schedule_day_sum', 'schedule_title_len_sum', 'src_airport_go', 'dst_airport_go',
+            'src_airport_back', 'dst_airport_back', 'transfer', 'predays', 'begin_date_weekday', 'order_date_weekday',
             'return_date_weekday', 'order_date_year', 'begin_date_year', 'order_date_month', 'begin_date_month',
             'order_date_day', 'begin_date_day', 'order_date_week', 'begin_date_week', 'order_date_quarter',
             'begin_date_quarter']
@@ -71,7 +71,7 @@ params = {
     'objective': 'binary',
     'metric': {'binary_logloss', 'auc'},
     'learning_rate': 0.01,
-    'max_depth': 10,
+    'max_depth': 16,
     'num_leaves': 1000,
     # 'min_sum_hessian_in_leaf': 0.01,
     'min_data_in_leaf': 100,
@@ -84,14 +84,12 @@ params = {
     # 'is_unbalance': True
 }
 
-print('Start training...')
 gbm = lgb.train(params,
                 lgb_train,
                 valid_sets=lgb_eval,
                 num_boost_round=5000,
                 early_stopping_rounds=100)
 
-print('Start predicting...')
 preds = gbm.predict(test_x, num_iteration=gbm.best_iteration)
 df_test['deal_or_not'] = preds
 print(df_test['deal_or_not'].describe())
@@ -108,6 +106,6 @@ with open('./feature_importance.txt', 'w+') as file:
         string = names[index] + ', ' + str(im) + '\n'
         file.write(string)
 
-lgb.plot_importance(gbm)
+lgb.plot_importance(gbm, figsize=(16, 9))
 plt.savefig('feature_importance.png')
 plt.show()
