@@ -11,13 +11,13 @@ df_order = pd.read_csv('df_order.csv', dtype={'order_id': str, 'group_id': str})
 df_test = pd.read_csv('testing-set.csv', dtype={'order_id': str})
 df_train = pd.read_csv('training-set.csv', dtype={'order_id': str})
 
-for feature in ['product_name_start', 'schedule_random_city', 'src_airport_go', 'dst_airport_go', 'src_airport_back',
+for feature in ['product_name_bracket', 'schedule_random_city', 'src_airport_go', 'dst_airport_go', 'src_airport_back',
                 'dst_airport_back']:
     le = LabelEncoder()
     le.fit(df_order[feature].astype(str))
     df_order[feature] = le.transform(df_order[feature].astype(str))
 
-features = ['source_1', 'source_2', 'unit', 'people_amount', 'sub_line', 'area', 'days', 'price', 'product_name_start',
+features = ['source_1', 'source_2', 'unit', 'people_amount', 'sub_line', 'area', 'days', 'price', 'product_name_bracket',
             'product_name_len', 'promotion_prog_len', 'schedule_random_day', 'schedule_random_title_len',
             'schedule_random_city', 'schedule_day_sum', 'schedule_title_len_sum', 'src_airport_go', 'dst_airport_go',
             'src_airport_back', 'dst_airport_back', 'transfer', 'predays', 'begin_date_weekday', 'order_date_weekday',
@@ -49,29 +49,12 @@ X_train, X_valid, Y_train, Y_valid = train_test_split(
 lgb_train = lgb.Dataset(X_train, Y_train)
 lgb_eval = lgb.Dataset(X_valid, Y_valid, reference=lgb_train)
 
-# params = {
-#     'boosting_type': 'gbdt',
-#     'objective': 'binary',
-#     'metric': {'binary_logloss', 'auc'},
-#     'num_leaves': 100,
-#     'max_depth': 20,
-#     'min_data_in_leaf': 450,
-#     'learning_rate': 0.002,
-#     'feature_fraction': 0.8,
-#     'bagging_fraction': 0.9,
-#     'bagging_freq': 5,
-#     # 'lambda_l1': 0.001,
-#     # 'lambda_l2': 0.001,
-#     'min_gain_to_split': 0.5,
-#     'verbose': 5,
-#     'is_unbalance': True
-# }
 params = {
     'boosting_type': 'gbdt',
     'objective': 'binary',
     'metric': {'binary_logloss', 'auc'},
     'learning_rate': 0.01,
-    'max_depth': 16,
+    'max_depth': 25,
     'num_leaves': 1000,
     # 'min_sum_hessian_in_leaf': 0.01,
     'min_data_in_leaf': 100,

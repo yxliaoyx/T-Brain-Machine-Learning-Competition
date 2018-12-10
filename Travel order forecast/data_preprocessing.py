@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import re
 
 df_order = pd.read_csv('dataset/order.csv', dtype={'order_id': str, 'group_id': str})
 df_group = pd.read_csv('dataset/group.csv')
@@ -22,7 +23,8 @@ def Convert_Date(x):
 df_group['begin_date'] = df_group['begin_date'].apply(lambda x: Convert_Date(x))
 df_group['sub_line'] = df_group['sub_line'].apply(lambda x: int(x[14:]))
 df_group['area'] = df_group['area'].apply(lambda x: int(x[11:]))
-df_group['product_name_start'] = df_group['product_name'].apply(lambda x: str(x)[:1])
+df_group['product_name_bracket'] = df_group['product_name'].str.extract('《?(.+?)》', expand=True).fillna('')
+
 df_group['product_name_len'] = df_group['product_name'].apply(lambda x: len(str(x)))
 df_group['promotion_prog_len'] = df_group['promotion_prog'].apply(lambda x: len(str(x)))
 
