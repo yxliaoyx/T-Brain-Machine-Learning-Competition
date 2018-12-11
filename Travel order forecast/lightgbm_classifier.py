@@ -11,19 +11,59 @@ df_order = pd.read_csv('df_order.csv', dtype={'order_id': str, 'group_id': str})
 df_test = pd.read_csv('testing-set.csv', dtype={'order_id': str})
 df_train = pd.read_csv('training-set.csv', dtype={'order_id': str})
 
-for feature in ['product_name_bracket', 'schedule_random_city', 'src_airport_go', 'dst_airport_go', 'src_airport_back',
+for feature in ['product_name_in_brackets', 'schedule_random_city', 'src_airport_go', 'dst_airport_go',
+                'src_airport_back',
                 'dst_airport_back']:
     le = LabelEncoder()
     le.fit(df_order[feature].astype(str))
     df_order[feature] = le.transform(df_order[feature].astype(str))
 
-features = ['source_1', 'source_2', 'unit', 'people_amount', 'sub_line', 'area', 'days', 'price', 'product_name_bracket',
-            'product_name_len', 'promotion_prog_len', 'schedule_random_day', 'schedule_random_title_len',
-            'schedule_random_city', 'schedule_day_sum', 'schedule_title_len_sum', 'src_airport_go', 'dst_airport_go',
-            'src_airport_back', 'dst_airport_back', 'transfer', 'predays', 'begin_date_weekday', 'order_date_weekday',
-            'return_date_weekday', 'order_date_year', 'begin_date_year', 'order_date_month', 'begin_date_month',
-            'order_date_day', 'begin_date_day', 'order_date_week', 'begin_date_week', 'order_date_quarter',
-            'begin_date_quarter']
+features = ['source_1',
+            'source_2',
+            'unit',
+            'people_amount',
+            'sub_line',
+            'area',
+            'days',
+            'price',
+            'product_name_in_brackets',
+            'product_name_in_brackets_len',
+            'product_name_brackets_sum',
+            'product_name_brackets_diff',
+            'product_name_len',
+            'promotion_prog_len',
+            'schedule_random_day',
+            'schedule_random_title_len',
+            'schedule_random_city',
+            'schedule_day_sum',
+            'schedule_title_len_sum',
+            'src_airport_go',
+            'dst_airport_go',
+            'src_airport_back',
+            'dst_airport_back',
+            'transfer',
+            'source_1 + source_2',
+            'source_1 + unit',
+            'source_2 + unit',
+            'source_1 * source_2',
+            'source_1 * unit',
+            'source_2 * unit',
+            'predays',
+            'begin_date_weekday',
+            'order_date_weekday',
+            'return_date_weekday',
+            'order_date_year',
+            'begin_date_year',
+            'order_date_month',
+            'begin_date_month',
+            'order_date_day',
+            'begin_date_day',
+            'order_date_week',
+            'begin_date_week',
+            'order_date_quarter',
+            'begin_date_quarter',
+            'price // predays',
+            'predays // days']
 
 df_test = pd.merge(df_test, df_order, 'left')
 test_x = df_test[features]
