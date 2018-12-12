@@ -11,9 +11,10 @@ df_order = pd.read_csv('df_order.csv', dtype={'order_id': str, 'group_id': str})
 df_test = pd.read_csv('testing-set.csv', dtype={'order_id': str})
 df_train = pd.read_csv('training-set.csv', dtype={'order_id': str})
 
-for feature in ['product_name_in_brackets', 'schedule_random_city', 'src_airport_go', 'dst_airport_go',
-                'src_airport_back',
-                'dst_airport_back']:
+for feature in ['product_name_in_brackets', 'schedule_random_city', 'src_random_airport_go',
+                'src_random_airport_go_1st_letter', 'dst_random_airport_go_1st_letter', 'dst_random_airport_go',
+                'src_random_airport_back', 'dst_random_airport_back', 'src_random_airport_back_1st_letter',
+                'dst_random_airport_back_1st_letter']:
     le = LabelEncoder()
     le.fit(df_order[feature].astype(str))
     df_order[feature] = le.transform(df_order[feature].astype(str))
@@ -37,10 +38,14 @@ features = ['source_1',
             'schedule_random_city',
             'schedule_day_sum',
             'schedule_title_len_sum',
-            'src_airport_go',
-            'dst_airport_go',
-            'src_airport_back',
-            'dst_airport_back',
+            'src_random_airport_go',
+            'dst_random_airport_go',
+            'src_random_airport_go_1st_letter',
+            'dst_random_airport_go_1st_letter',
+            'src_random_airport_back',
+            'dst_random_airport_back',
+            'src_random_airport_back_1st_letter',
+            'dst_random_airport_back_1st_letter',
             'transfer',
             'source_1 + source_2',
             'source_1 + unit',
@@ -63,7 +68,8 @@ features = ['source_1',
             'order_date_quarter',
             'begin_date_quarter',
             'price // predays',
-            'predays // days']
+            'predays // days',
+            'price // days']
 
 df_test = pd.merge(df_test, df_order, 'left')
 test_x = df_test[features]
@@ -94,10 +100,10 @@ params = {
     'objective': 'binary',
     'metric': {'binary_logloss', 'auc'},
     'learning_rate': 0.01,
-    'max_depth': 25,
+    'max_depth': 10,
     'num_leaves': 1000,
     # 'min_sum_hessian_in_leaf': 0.01,
-    'min_data_in_leaf': 100,
+    # 'min_data_in_leaf': 100,
     'bagging_fraction': 0.8,
     'feature_fraction': 0.5,
     # 'lambda_l1': 0.001
@@ -130,5 +136,6 @@ with open('./feature_importance.txt', 'w+') as file:
         file.write(string)
 
 lgb.plot_importance(gbm, figsize=(16, 9))
+plt.tight_layout()
 plt.savefig('feature_importance.png')
 plt.show()

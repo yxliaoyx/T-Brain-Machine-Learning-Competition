@@ -48,14 +48,18 @@ df_day_schedule_sum = df_day_schedule_sum.rename(
 df_group = pd.merge(df_group, df_day_schedule_sum[['group_id', 'schedule_day_sum', 'schedule_title_len_sum']], 'left')
 
 df_airport_go = df_airline[['group_id', 'src_airport', 'dst_airport']][df_airline['go_back'] == '去程']
-df_airport_go = df_airport_go.groupby('group_id').agg(np.random.choice).reset_index()
+df_random_airport_go = df_airport_go.groupby('group_id').agg(np.random.choice).reset_index()
 df_airport_back = df_airline[['group_id', 'src_airport', 'dst_airport']][df_airline['go_back'] == '回程']
-df_airport_back = df_airport_back.groupby('group_id').agg(np.random.choice).reset_index()
+df_random_airport_back = df_airport_back.groupby('group_id').agg(np.random.choice).reset_index()
 
-df_group = pd.merge(df_group, df_airport_go, 'left')
-df_group = df_group.rename(columns={'src_airport': 'src_airport_go', 'dst_airport': 'dst_airport_go'})
-df_group = pd.merge(df_group, df_airport_back, 'left')
-df_group = df_group.rename(columns={'src_airport': 'src_airport_back', 'dst_airport': 'dst_airport_back'})
+df_group = pd.merge(df_group, df_random_airport_go, 'left')
+df_group = df_group.rename(columns={'src_airport': 'src_random_airport_go', 'dst_airport': 'dst_random_airport_go'})
+df_group['src_random_airport_go_1st_letter'] = df_group['src_random_airport_go'].apply(lambda x: str(x)[:1])
+df_group['dst_random_airport_go_1st_letter'] = df_group['dst_random_airport_go'].apply(lambda x: str(x)[:1])
+df_group = pd.merge(df_group, df_random_airport_back, 'left')
+df_group = df_group.rename(columns={'src_airport': 'src_random_airport_back', 'dst_airport': 'dst_random_airport_back'})
+df_group['src_random_airport_back_1st_letter'] = df_group['src_random_airport_back'].apply(lambda x: str(x)[:1])
+df_group['dst_random_airport_back_1st_letter'] = df_group['dst_random_airport_back'].apply(lambda x: str(x)[:1])
 
 df_airline_transfer = df_airline.groupby('group_id').size().reset_index().rename(columns={0: 'transfer'}).fillna(2)
 df_group = pd.merge(df_group, df_airline_transfer, 'left')
@@ -89,7 +93,8 @@ df_order['begin_date_quarter'] = df_order['begin_date'].dt.quarter
 
 df_order['price // predays'] = df_order['price'] // df_order['predays']
 df_order['predays // days'] = df_order['predays'] // df_order['days']
+df_order['price // days'] = df_order['price'] // df_order['days']
 
-print(df_order['predays // days'].describe())
+print(df_order.describe())
 
 df_order.to_csv('df_order.csv', index=False)
