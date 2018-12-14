@@ -12,9 +12,13 @@ df_test = pd.read_csv('testing-set.csv', dtype={'order_id': str})
 df_train = pd.read_csv('training-set.csv', dtype={'order_id': str})
 
 for feature in ['product_name_in_brackets', 'schedule_random_city', 'src_random_airport_go',
-                'src_random_airport_go_1st_letter', 'dst_random_airport_go_1st_letter', 'dst_random_airport_go',
+                'src_random_airport_go_1st_letter', 'dst_random_airport_go_1st_letter',
+                'src_random_airport_go_2nd_letter', 'dst_random_airport_go_2nd_letter',
+                'src_random_airport_go_3rd_letter', 'dst_random_airport_go_3rd_letter', 'dst_random_airport_go',
                 'src_random_airport_back', 'dst_random_airport_back', 'src_random_airport_back_1st_letter',
-                'dst_random_airport_back_1st_letter']:
+                'dst_random_airport_back_1st_letter', 'src_random_airport_back_2nd_letter',
+                'dst_random_airport_back_2nd_letter', 'src_random_airport_back_3rd_letter',
+                'dst_random_airport_back_3rd_letter']:
     le = LabelEncoder()
     le.fit(df_order[feature].astype(str))
     df_order[feature] = le.transform(df_order[feature].astype(str))
@@ -42,10 +46,18 @@ features = ['source_1',
             'dst_random_airport_go',
             'src_random_airport_go_1st_letter',
             'dst_random_airport_go_1st_letter',
+            'src_random_airport_go_2nd_letter',
+            'dst_random_airport_go_2nd_letter',
+            'src_random_airport_go_3rd_letter',
+            'dst_random_airport_go_3rd_letter',
             'src_random_airport_back',
             'dst_random_airport_back',
             'src_random_airport_back_1st_letter',
             'dst_random_airport_back_1st_letter',
+            'src_random_airport_back_2nd_letter',
+            'dst_random_airport_back_2nd_letter',
+            'src_random_airport_back_3rd_letter',
+            'dst_random_airport_back_3rd_letter',
             'transfer',
             'source_1 + source_2',
             'source_1 + unit',
@@ -106,7 +118,7 @@ params = {
     # 'min_data_in_leaf': 100,
     'bagging_fraction': 0.8,
     'feature_fraction': 0.5,
-    # 'lambda_l1': 0.001
+    'lambda_l1': 0.001,
     # 'lambda_l2': 0.001
     # 'min_gain_to_split': 0.2
     'verbose': 2,
