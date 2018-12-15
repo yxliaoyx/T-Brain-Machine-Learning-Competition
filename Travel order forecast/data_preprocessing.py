@@ -22,7 +22,7 @@ def Convert_Date(x):
 df_group['begin_date'] = df_group['begin_date'].apply(lambda x: Convert_Date(x))
 df_group['sub_line'] = df_group['sub_line'].apply(lambda x: int(x[14:]))
 df_group['area'] = df_group['area'].apply(lambda x: int(x[11:]))
-df_group['product_name_in_brackets'] = df_group['product_name'].str.extract('《?(.+?)》', expand=True).fillna('')
+df_group['product_name_in_brackets'] = df_group['product_name'].str.extract('[《【]?(.+?)[》】]', expand=True).fillna('')
 df_group['product_name_in_brackets_len'] = df_group['product_name_in_brackets'].apply(lambda x: len(str(x)))
 left_bracket_count = df_group['product_name'].str.count('《')
 right_bracket_count = df_group['product_name'].str.count('》')
@@ -32,15 +32,18 @@ df_group['product_name_len'] = df_group['product_name'].apply(lambda x: len(str(
 df_group['promotion_prog_len'] = df_group['promotion_prog'].apply(lambda x: len(str(x)))
 
 df_day_schedule['schedule_title_len'] = df_day_schedule['title'].apply(lambda x: len(str(x)))
+df_day_schedule['schedule_title_in_brackets'] = df_day_schedule['title'].str.extract('【(.+?)】', expand=True).fillna('')
 
 df_day_schedule_random = df_day_schedule.groupby('group_id').agg(np.random.choice).reset_index()
 df_day_schedule_random['schedule_title_len'] = df_day_schedule_random['title'].apply(lambda x: len(str(x)))
 df_day_schedule_random['schedule_city'] = df_day_schedule_random['title'].apply(lambda x: str(x)[:2])
 df_day_schedule_random = df_day_schedule_random.rename(
     columns={'day': 'schedule_random_day', 'schedule_title_len': 'schedule_random_title_len',
+             'schedule_title_in_brackets': 'schedule_random_title_in_brackets',
              'schedule_city': 'schedule_random_city'})
 df_group = pd.merge(df_group, df_day_schedule_random[
-    ['group_id', 'schedule_random_day', 'schedule_random_title_len', 'schedule_random_city']], 'left')
+    ['group_id', 'schedule_random_day', 'schedule_random_title_len', 'schedule_random_title_in_brackets',
+     'schedule_random_city']], 'left')
 
 df_day_schedule_sum = df_day_schedule.groupby('group_id').sum().reset_index()
 df_day_schedule_sum = df_day_schedule_sum.rename(
@@ -68,7 +71,6 @@ df_group['src_random_airport_back_2nd_letter'] = df_group['src_random_airport_ba
 df_group['dst_random_airport_back_2nd_letter'] = df_group['dst_random_airport_back'].apply(lambda x: str(x)[1])
 df_group['src_random_airport_back_3rd_letter'] = df_group['src_random_airport_back'].apply(lambda x: str(x)[2])
 df_group['dst_random_airport_back_3rd_letter'] = df_group['dst_random_airport_back'].apply(lambda x: str(x)[2])
-print(df_group['dst_random_airport_back_3rd_letter'])
 
 df_airline_transfer = df_airline.groupby('group_id').size().reset_index().rename(columns={0: 'transfer'}).fillna(2)
 df_group = pd.merge(df_group, df_airline_transfer, 'left')
