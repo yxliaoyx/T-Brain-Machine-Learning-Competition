@@ -33,6 +33,12 @@ df_group['promotion_prog_len'] = df_group['promotion_prog'].apply(lambda x: len(
 
 df_day_schedule['schedule_title_len'] = df_day_schedule['title'].apply(lambda x: len(str(x)))
 df_day_schedule['schedule_title_in_brackets'] = df_day_schedule['title'].str.extract('【(.+?)】', expand=True).fillna('')
+df_day_schedule['schedule_title_in_brackets_len'] = df_day_schedule['schedule_title_in_brackets'].apply(
+    lambda x: len(str(x)))
+left_bracket_count = df_day_schedule['title'].str.count('【')
+right_bracket_count = df_day_schedule['title'].str.count('】')
+df_day_schedule['schedule_title_in_brackets_sum'] = left_bracket_count + right_bracket_count
+df_day_schedule['schedule_title_in_brackets_diff'] = left_bracket_count - right_bracket_count
 
 df_day_schedule_random = df_day_schedule.groupby('group_id').agg(np.random.choice).reset_index()
 df_day_schedule_random['schedule_title_len'] = df_day_schedule_random['title'].apply(lambda x: len(str(x)))
@@ -40,10 +46,14 @@ df_day_schedule_random['schedule_city'] = df_day_schedule_random['title'].apply(
 df_day_schedule_random = df_day_schedule_random.rename(
     columns={'day': 'schedule_random_day', 'schedule_title_len': 'schedule_random_title_len',
              'schedule_title_in_brackets': 'schedule_random_title_in_brackets',
+             'schedule_title_in_brackets_len': 'schedule_random_title_in_brackets_len',
+             'schedule_title_in_brackets_sum': 'schedule_random_title_in_brackets_sum',
+             'schedule_title_in_brackets_diff': 'schedule_random_title_in_brackets_diff',
              'schedule_city': 'schedule_random_city'})
 df_group = pd.merge(df_group, df_day_schedule_random[
     ['group_id', 'schedule_random_day', 'schedule_random_title_len', 'schedule_random_title_in_brackets',
-     'schedule_random_city']], 'left')
+     'schedule_random_title_in_brackets_sum', 'schedule_random_title_in_brackets_diff',
+     'schedule_random_title_in_brackets_len', 'schedule_random_city']], 'left')
 
 df_day_schedule_sum = df_day_schedule.groupby('group_id').sum().reset_index()
 df_day_schedule_sum = df_day_schedule_sum.rename(
