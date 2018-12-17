@@ -57,6 +57,9 @@ features = ['source_1',
             'schedule_random_city',
             'schedule_day_sum',
             'schedule_title_len_sum',
+            'schedule_title_in_brackets_len_sum',
+            'schedule_title_in_brackets_sum_sum',
+            'schedule_title_in_brackets_diff_sum',
             'src_random_airport_go',
             'dst_random_airport_go',
             'src_random_airport_go_1st_letter',
@@ -96,12 +99,14 @@ features = ['source_1',
             'begin_date_quarter',
             'price // predays',
             'predays // days',
-            'price // days']
+            'price // days',
+            'schedule_title_len_sum // predays']
 
 df_test = pd.merge(df_test, df_order, 'left')
 test_x = df_test[features]
 
 df_train = pd.merge(df_train, df_order, 'left')
+
 df_train_deal = df_train[df_train['deal_or_not'] == 1]
 df_train_not_deal = df_train[df_train['deal_or_not'] == 0]
 

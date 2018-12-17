@@ -57,8 +57,13 @@ df_group = pd.merge(df_group, df_day_schedule_random[
 
 df_day_schedule_sum = df_day_schedule.groupby('group_id').sum().reset_index()
 df_day_schedule_sum = df_day_schedule_sum.rename(
-    columns={'day': 'schedule_day_sum', 'schedule_title_len': 'schedule_title_len_sum'})
-df_group = pd.merge(df_group, df_day_schedule_sum[['group_id', 'schedule_day_sum', 'schedule_title_len_sum']], 'left')
+    columns={'day': 'schedule_day_sum', 'schedule_title_len': 'schedule_title_len_sum',
+             'schedule_title_in_brackets_len': 'schedule_title_in_brackets_len_sum',
+             'schedule_title_in_brackets_sum': 'schedule_title_in_brackets_sum_sum',
+             'schedule_title_in_brackets_diff': 'schedule_title_in_brackets_diff_sum'})
+df_group = pd.merge(df_group, df_day_schedule_sum[
+    ['group_id', 'schedule_day_sum', 'schedule_title_len_sum', 'schedule_title_in_brackets_len_sum',
+     'schedule_title_in_brackets_sum_sum', 'schedule_title_in_brackets_diff_sum']], 'left')
 
 df_airport_go = df_airline[['group_id', 'src_airport', 'dst_airport']][df_airline['go_back'] == '去程']
 df_random_airport_go = df_airport_go.groupby('group_id').agg(np.random.choice).reset_index()
@@ -115,6 +120,8 @@ df_order['begin_date_quarter'] = df_order['begin_date'].dt.quarter
 df_order['price // predays'] = df_order['price'] // df_order['predays']
 df_order['predays // days'] = df_order['predays'] // df_order['days']
 df_order['price // days'] = df_order['price'] // df_order['days']
+
+df_order['schedule_title_len_sum // predays'] = df_order['schedule_title_len_sum'] // df_order['predays']
 
 print(df_order.describe())
 
