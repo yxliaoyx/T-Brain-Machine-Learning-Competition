@@ -123,6 +123,9 @@ df_order['price // days'] = df_order['price'] // df_order['days']
 
 df_order['schedule_title_len_sum // predays'] = df_order['schedule_title_len_sum'] // df_order['predays']
 
+df_order['product_name_len + promotion_prog_len'] = df_order['product_name_len'] + df_order['promotion_prog_len']
+df_order['product_name_len - promotion_prog_len'] = df_order['product_name_len'] - df_order['promotion_prog_len']
+
 print(df_order.describe())
 
 df_order.to_csv('df_order.csv', index=False)

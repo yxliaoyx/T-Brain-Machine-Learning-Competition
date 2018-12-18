@@ -100,7 +100,9 @@ features = ['source_1',
             'price // predays',
             'predays // days',
             'price // days',
-            'schedule_title_len_sum // predays']
+            'schedule_title_len_sum // predays',
+            'product_name_len + promotion_prog_len',
+            'product_name_len - promotion_prog_len']
 
 df_test = pd.merge(df_test, df_order, 'left')
 test_x = df_test[features]
