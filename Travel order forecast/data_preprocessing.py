@@ -126,6 +126,12 @@ df_order['schedule_title_len_sum // predays'] = df_order['schedule_title_len_sum
 df_order['product_name_len + promotion_prog_len'] = df_order['product_name_len'] + df_order['promotion_prog_len']
 df_order['product_name_len - promotion_prog_len'] = df_order['product_name_len'] - df_order['promotion_prog_len']
 
+df_order['days // transfer'] = df_order['days'] // df_order['transfer']
+df_order['price // transfer'] = df_order['price'] // df_order['transfer']
+
+df_order['sub_line + area'] = df_order['sub_line'] + df_order['area']
+df_order['sub_line - area'] = df_order['sub_line'] - df_order['area']
+
 print(df_order.describe())
 
 df_order.to_csv('df_order.csv', index=False)

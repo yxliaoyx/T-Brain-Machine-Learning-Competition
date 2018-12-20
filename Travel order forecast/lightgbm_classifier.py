@@ -102,7 +102,11 @@ features = ['source_1',
             'price // days',
             'schedule_title_len_sum // predays',
             'product_name_len + promotion_prog_len',
-            'product_name_len - promotion_prog_len']
+            'product_name_len - promotion_prog_len',
+            'days // transfer',
+            'price // transfer',
+            'sub_line + area',
+            'sub_line - area']
 
 df_test = pd.merge(df_test, df_order, 'left')
 test_x = df_test[features]
@@ -169,7 +173,7 @@ with open('./feature_importance.txt', 'w+') as file:
         string = names[index] + ', ' + str(im) + '\n'
         file.write(string)
 
-lgb.plot_importance(gbm, figsize=(16, 9))
+lgb.plot_importance(gbm, figsize=(16, 10))
 plt.tight_layout()
 plt.savefig('feature_importance.png')
 plt.show()
