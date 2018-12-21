@@ -106,7 +106,9 @@ features = ['source_1',
             'days // transfer',
             'price // transfer',
             'sub_line + area',
-            'sub_line - area']
+            'sub_line - area',
+            'price * people_amount',
+            'transfer * people_amount']
 
 df_test = pd.merge(df_test, df_order, 'left')
 test_x = df_test[features]

@@ -132,6 +132,10 @@ df_order['price // transfer'] = df_order['price'] // df_order['transfer']
 df_order['sub_line + area'] = df_order['sub_line'] + df_order['area']
 df_order['sub_line - area'] = df_order['sub_line'] - df_order['area']
 
+df_order['price * people_amount'] = df_order['price'] * df_order['people_amount']
+df_order['transfer * people_amount'] = df_order['transfer'] * df_order['people_amount']
+
+
 print(df_order.describe())
 
 df_order.to_csv('df_order.csv', index=False)
